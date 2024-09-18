@@ -1,8 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { FieldService } from './field.service';
-import { CreateFieldDto } from './dto/create-field.dto';
+import { CreateFieldDto, CreateFieldTypeDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
+import {
+  QueryFieldTypeDto,
+  QueryFieldTypeResponse,
+} from './dto/query-field.dto';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Field')
 @Controller('field')
 export class FieldController {
   constructor(private readonly fieldService: FieldService) {}
@@ -12,9 +27,21 @@ export class FieldController {
     return this.fieldService.create(createFieldDto);
   }
 
+  @Post('/type')
+  createType(@Body() dto: CreateFieldTypeDto) {
+    return this.fieldService.create(dto);
+  }
+
   @Get()
   findAll() {
     return this.fieldService.findAll();
+  }
+
+  @Get('/type')
+  @ApiOperation({ summary: '分页获取字段类型' })
+  @ApiOkResponse({ type: QueryFieldTypeResponse })
+  findTypes(@Query() dto: QueryFieldTypeDto): Promise<QueryFieldTypeResponse> {
+    return this.fieldService.findTypes(dto);
   }
 
   @Get(':id')
