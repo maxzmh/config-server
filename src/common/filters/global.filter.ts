@@ -19,7 +19,7 @@ export class GlobalFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    const exceptionRes = exception.getResponse() as { message: string[] };
+    const exceptionRes = exception?.getResponse?.() as { message: string[] };
     const responseBody = {
       code: httpStatus,
       message: exceptionRes?.message?.join

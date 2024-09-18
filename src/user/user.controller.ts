@@ -12,6 +12,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('user')
 @UsePipes(new ValidationPipe())
@@ -28,9 +29,15 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @Get(':email')
+  findOne(@Param('email') email: string) {
+    return this.userService.findOne(email);
+  }
+
+  @Get('exists/:email')
+  async userEmailExists(@Param('email') email: string) {
+    const users: Array<User> = await this.userService.findOne(email);
+    return { exists: !!users?.length };
   }
 
   @Patch(':id')

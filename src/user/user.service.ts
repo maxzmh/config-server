@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,16 +11,22 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const userTmp = await this.userRepository.create(createUserDto);
-    return this.userRepository.save(userTmp);
+    const users = await this.findOne(createUserDto.email);
+    console.log();
+    if (!users?.length) {
+      const userTmp = await this.userRepository.create(createUserDto);
+      return this.userRepository.save(userTmp);
+    }
+    throw new HttpException('用户邮箱已存在', HttpStatus.CONFLICT);
   }
 
   findAll() {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(email: string) {
+    const user = await this.userRepository.findBy({ email });
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

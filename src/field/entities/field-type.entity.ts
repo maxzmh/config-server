@@ -8,4 +8,6 @@ export class FieldType {
   type: string;
   @Column()
   name: string;
+  @Column()
+  options: string;
 }
