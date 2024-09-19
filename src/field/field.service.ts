@@ -5,10 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Field } from './entities/field.entity';
 import { FieldType } from './entities/field-type.entity';
-import {
-  QueryFieldTypeDto,
-  QueryFieldTypeResponse,
-} from './dto/query-field.dto';
+import { QueryFieldTypeDto } from './dto/query-field.dto';
 
 @Injectable()
 export class FieldService {
@@ -32,12 +29,21 @@ export class FieldService {
   }
 
   async findTypes(dto: QueryFieldTypeDto) {
-    const { page = 1, limit = 10 } = dto;
+    const { page = 1, limit = 10, name, type } = dto;
     const skip = (page - 1) * limit;
-    const [types, total] = await this.fieldTypeRepo.findAndCount({
-      skip,
-      take: limit,
-    });
+    const queryBuilder = this.fieldTypeRepo.createQueryBuilder('fieldType');
+    if (name) {
+      queryBuilder.where('fieldType.name LIKE :name', { name: `%${name}%` });
+    }
+    if (type) {
+      queryBuilder.where('fieldType.type LIKE :type', { type: `%${type}%` });
+    }
+
+    const [types, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
     return {
       data: types,
       total,
@@ -54,7 +60,15 @@ export class FieldService {
     return `This action updates a #${id} field`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} field`;
+  updateType(id: number, updateFieldDto: UpdateFieldDto) {
+    return this.fieldTypeRepo.update(id, updateFieldDto);
+  }
+
+  remove(ids: number[]) {
+    return `This action removes a #${ids} field`;
+  }
+
+  async removeType(ids: number[]) {
+    return await this.fieldTypeRepo.delete(ids);
   }
 }

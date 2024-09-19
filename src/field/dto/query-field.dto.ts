@@ -14,6 +14,14 @@ export class QueryFieldTypeDto {
   @IsOptional()
   @ApiProperty({ description: '每页条数' })
   limit?: number;
+
+  @IsOptional()
+  @ApiProperty({ description: '名称' })
+  name?: string;
+
+  @IsOptional()
+  @ApiProperty({ description: '类型' })
+  type?: string;
 }
 
 export class QueryFieldTypeResponse {

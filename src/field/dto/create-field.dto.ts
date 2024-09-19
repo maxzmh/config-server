@@ -10,5 +10,5 @@ export class CreateFieldTypeDto {
   name: string;
   @ApiProperty({ description: '字段可选参数' })
   @IsOptional()
-  options: string;
+  options?: string;
 }
