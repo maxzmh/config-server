@@ -12,9 +12,3 @@ export class CreateUserDto {
   @IsEmail({}, { message: '邮箱格式不正确' })
   email: string;
 }
-
-export class CreateGroupDto {
-  @ApiProperty({ description: '分组名称' })
-  @Length(2, 16, { message: '分组名称长度在2-16位之间' })
-  groupName: string;
-}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFieldDto, CreateFieldTypeDto } from './dto/create-field.dto';
-import { UpdateFieldDto } from './dto/update-field.dto';
+import { UpdateFieldDto, UpdateFieldTypeDto } from './dto/update-field.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Field } from './entities/field.entity';
@@ -29,14 +29,20 @@ export class FieldService {
   }
 
   async findTypes(dto: QueryFieldTypeDto) {
-    const { page = 1, limit = 10, name, type } = dto;
+    const { page = 1, limit = 10, name = '', type = '' } = dto;
     const skip = (page - 1) * limit;
     const queryBuilder = this.fieldTypeRepo.createQueryBuilder('fieldType');
-    if (name) {
-      queryBuilder.where('fieldType.name LIKE :name', { name: `%${name}%` });
-    }
-    if (type) {
-      queryBuilder.where('fieldType.type LIKE :type', { type: `%${type}%` });
+    if (name === type) {
+      queryBuilder
+        .where('fieldType.name LIKE :name', { name: `%${name}%` })
+        .orWhere('fieldType.type LIKE :type', { type: `%${type}%` });
+    } else {
+      if (name) {
+        queryBuilder.where('fieldType.name LIKE :name', { name: `%${name}%` });
+      }
+      if (type) {
+        queryBuilder.where('fieldType.type LIKE :type', { type: `%${type}%` });
+      }
     }
 
     const [types, total] = await queryBuilder
@@ -60,8 +66,8 @@ export class FieldService {
     return `This action updates a #${id} field`;
   }
 
-  updateType(id: number, updateFieldDto: UpdateFieldDto) {
-    return this.fieldTypeRepo.update(id, updateFieldDto);
+  updateType(id: number, dto: UpdateFieldTypeDto) {
+    return this.fieldTypeRepo.update(id, dto);
   }
 
   remove(ids: number[]) {

@@ -8,12 +8,14 @@ import {
   Delete,
   ValidationPipe,
   UsePipes,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Group } from './entities/group.entity';
 
 @Controller('user')
 @ApiTags('User')
@@ -29,6 +31,13 @@ export class UserController {
   @Get()
   findAll() {
     return this.userService.findAll();
+  }
+
+  @Get('group')
+  @ApiOperation({ summary: '查询所有用户组' })
+  @ApiOkResponse({ type: Group })
+  findUserGroupAll(@Query('groupName') groupName: string) {
+    return this.userService.findGroupAll(groupName);
   }
 
   @Get(':email')

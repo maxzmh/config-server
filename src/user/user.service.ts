@@ -4,11 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { Group } from './entities/group.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Group)
+    private readonly groupRepository: Repository<Group>,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const users = await this.findOne(createUserDto.email);
@@ -22,6 +25,18 @@ export class UserService {
 
   findAll() {
     return `This action returns all user`;
+  }
+
+  async findGroupAll(groupName: string) {
+    if (groupName) {
+      const queryBuilder = this.groupRepository.createQueryBuilder('group');
+      queryBuilder.where('group.group_name LIKE :groupName', {
+        groupName: `%${groupName}%`,
+      });
+      return queryBuilder.getMany();
+    } else {
+      return this.groupRepository.find();
+    }
   }
 
   async findOne(email: string) {

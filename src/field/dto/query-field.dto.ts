@@ -8,12 +8,12 @@ export class QueryFieldTypeDto {
   @ApiProperty({ description: '页码' })
   @IsNumber()
   @IsOptional()
-  page?: number;
+  page?: number = 1;
 
   @IsNumber()
   @IsOptional()
   @ApiProperty({ description: '每页条数' })
-  limit?: number;
+  limit?: number = 10;
 
   @IsOptional()
   @ApiProperty({ description: '名称' })

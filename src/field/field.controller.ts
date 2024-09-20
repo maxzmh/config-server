@@ -11,13 +11,14 @@ import {
 } from '@nestjs/common';
 import { FieldService } from './field.service';
 import { CreateFieldDto, CreateFieldTypeDto } from './dto/create-field.dto';
-import { UpdateFieldDto } from './dto/update-field.dto';
+import { UpdateFieldDto, UpdateFieldTypeDto } from './dto/update-field.dto';
 import {
   QueryFieldTypeDto,
   QueryFieldTypeResponse,
 } from './dto/query-field.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FieldType } from './entities/field-type.entity';
+import { Field } from './entities/field.entity';
 
 @ApiTags('Field')
 @Controller('field')
@@ -25,6 +26,8 @@ export class FieldController {
   constructor(private readonly fieldService: FieldService) {}
 
   @Post()
+  @ApiOperation({ summary: '创建字段类型' })
+  @ApiOkResponse({ type: Field })
   create(@Body() createFieldDto: CreateFieldDto) {
     return this.fieldService.create(createFieldDto);
   }
@@ -61,8 +64,8 @@ export class FieldController {
   @Patch('type/:id')
   @ApiOperation({ summary: '更新字段类型' })
   @ApiOkResponse({ type: FieldType })
-  updateType(@Param('id') id: string, @Body() updateFieldDto: UpdateFieldDto) {
-    return this.fieldService.updateType(+id, updateFieldDto);
+  updateType(@Param('id') id: string, @Body() dto: UpdateFieldTypeDto) {
+    return this.fieldService.updateType(+id, dto);
   }
 
   @Delete()
