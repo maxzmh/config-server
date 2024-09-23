@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Field } from './entities/field.entity';
 import { FieldType } from './entities/field-type.entity';
-import { QueryFieldTypeDto } from './dto/query-field.dto';
+import { QueryFieldDto, QueryFieldTypeDto } from './dto/query-field.dto';
 
 @Injectable()
 export class FieldService {
@@ -15,8 +15,20 @@ export class FieldService {
   @InjectRepository(FieldType)
   private fieldTypeRepo: Repository<FieldType>;
 
-  create(createFieldDto: CreateFieldDto) {
-    return 'This action adds a new field';
+  async create(dto: CreateFieldDto) {
+    const type: FieldType = await this.fieldTypeRepo.findOneBy({
+      id: dto.fieldTypeId,
+    });
+
+    if (!type) {
+      throw new Error('Field type not found');
+    }
+    const field = new Field();
+    field.fieldType = type;
+    field.cnName = dto.cnName;
+    field.key = dto.key;
+    const temp = await this.fieldRepo.create(field);
+    return this.fieldRepo.save(temp);
   }
 
   async createType(dto: CreateFieldTypeDto) {
@@ -24,8 +36,39 @@ export class FieldService {
     return this.fieldTypeRepo.save(temp);
   }
 
-  findAll() {
-    return `This action returns all field`;
+  async findAll(dto: QueryFieldDto) {
+    const { page = 1, limit = 10, cnName = '', key = '' } = dto;
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.fieldRepo
+      .createQueryBuilder('field')
+      .leftJoinAndSelect('field.fieldType', 'fieldType');
+    if (cnName === key) {
+      queryBuilder
+        .where('field.cnName LIKE :name', { name: `%${cnName}%` })
+        .orWhere('field.key LIKE :key', { key: `%${key}%` });
+    } else {
+      if (cnName) {
+        queryBuilder.where('field.cnName LIKE :name', {
+          name: `%${cnName}%`,
+        });
+      }
+      if (key) {
+        queryBuilder.where('field.key LIKE :key', { key: `%${key}%` });
+      }
+    }
+
+    const [types, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: types,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findTypes(dto: QueryFieldTypeDto) {
@@ -62,8 +105,15 @@ export class FieldService {
     return `This action returns a #${id} field`;
   }
 
-  update(id: number, updateFieldDto: UpdateFieldDto) {
-    return `This action updates a #${id} field`;
+  async update(id: number, dto: UpdateFieldDto) {
+    const fieldType = await this.fieldTypeRepo.findOneBy({
+      id: dto.fieldTypeId,
+    });
+    const field = new Field();
+    field.cnName = dto.cnName;
+    field.fieldType = fieldType;
+    field.key = dto.key;
+    return this.fieldRepo.update(id, field);
   }
 
   updateType(id: number, dto: UpdateFieldTypeDto) {
@@ -71,7 +121,7 @@ export class FieldService {
   }
 
   remove(ids: number[]) {
-    return `This action removes a #${ids} field`;
+    return this.fieldRepo.delete(ids);
   }
 
   async removeType(ids: number[]) {

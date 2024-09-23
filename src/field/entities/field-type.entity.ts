@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Field } from './field.entity';
 
 @Entity()
 export class FieldType {
@@ -37,4 +39,7 @@ export class FieldType {
   })
   @ApiProperty()
   updatedAt?: Date;
+
+  @OneToMany(() => Field, (field) => field.id)
+  fields: Field[];
 }

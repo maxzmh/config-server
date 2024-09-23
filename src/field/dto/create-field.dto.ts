@@ -6,10 +6,8 @@ export class CreateFieldDto {
   cnName: string;
   @ApiProperty({ description: '字段值' })
   key: string;
-  @ApiProperty({ description: '用户分组 ids' })
-  groupIds?: number[];
   @ApiProperty({ description: '字段类型' })
-  fieldTypeId?: string;
+  fieldTypeId: number;
 }
 
 export class CreateFieldTypeDto {

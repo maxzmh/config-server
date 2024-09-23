@@ -1,4 +1,3 @@
-import { Group } from 'src/user/entities/group.entity';
 import {
   Column,
   Entity,
@@ -7,21 +6,26 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { FieldType } from './field-type.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Field {
   @PrimaryGeneratedColumn()
+  @ApiProperty()
   id: number;
+
   @Column({ name: 'cn_name' })
+  @ApiProperty()
   cnName: string;
+
   @Column({
     unique: true,
   })
+  @ApiProperty()
   key: string;
-  @ManyToOne(() => Group)
-  @JoinColumn({ name: 'group_id' })
-  group: Group;
+
   @ManyToOne(() => FieldType)
   @JoinColumn({ name: 'field_type_id' })
+  @ApiProperty()
   fieldType: FieldType;
 }

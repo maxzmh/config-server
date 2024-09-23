@@ -13,6 +13,8 @@ import { FieldService } from './field.service';
 import { CreateFieldDto, CreateFieldTypeDto } from './dto/create-field.dto';
 import { UpdateFieldDto, UpdateFieldTypeDto } from './dto/update-field.dto';
 import {
+  QueryFieldDto,
+  QueryFieldsResponse,
   QueryFieldTypeDto,
   QueryFieldTypeResponse,
 } from './dto/query-field.dto';
@@ -26,7 +28,7 @@ export class FieldController {
   constructor(private readonly fieldService: FieldService) {}
 
   @Post()
-  @ApiOperation({ summary: '创建字段类型' })
+  @ApiOperation({ summary: '创建字段' })
   @ApiOkResponse({ type: Field })
   create(@Body() createFieldDto: CreateFieldDto) {
     return this.fieldService.create(createFieldDto);
@@ -40,8 +42,10 @@ export class FieldController {
   }
 
   @Get()
-  findAll() {
-    return this.fieldService.findAll();
+  @ApiOperation({ summary: '分页获取字段列表' })
+  @ApiOkResponse({ type: QueryFieldsResponse })
+  findAll(@Query() dto: QueryFieldDto): Promise<QueryFieldsResponse> {
+    return this.fieldService.findAll(dto);
   }
 
   @Get('/type')
@@ -57,6 +61,7 @@ export class FieldController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '更新字段' })
   update(@Param('id') id: string, @Body() updateFieldDto: UpdateFieldDto) {
     return this.fieldService.update(+id, updateFieldDto);
   }
@@ -69,6 +74,7 @@ export class FieldController {
   }
 
   @Delete()
+  @ApiOperation({ summary: '删除字段' })
   remove(@Query('ids', ParseArrayPipe) ids: number[]) {
     return this.fieldService.remove(ids);
   }
