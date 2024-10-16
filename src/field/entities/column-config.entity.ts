@@ -2,34 +2,26 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { FieldType } from './field-type.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
-export class Field {
+export class ColumnConfig {
   @PrimaryGeneratedColumn()
+  id: string;
+  @Column()
   @ApiProperty()
-  id: number;
-
-  @Column({ name: 'cn_name' })
+  name: string;
+  @Column()
   @ApiProperty()
-  cnName: string;
-
+  description: string;
+  @ApiProperty()
   @Column({
-    unique: true,
+    type: 'json',
   })
-  @ApiProperty()
-  key: string;
-
-  @ManyToOne(() => FieldType)
-  @JoinColumn({ name: 'field_type_id' })
-  @ApiProperty()
-  fieldType: FieldType;
+  columns?: any[];
   @CreateDateColumn({
     type: 'datetime',
     name: 'created_at',

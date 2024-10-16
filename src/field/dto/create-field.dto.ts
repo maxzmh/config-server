@@ -22,3 +22,13 @@ export class CreateFieldTypeDto {
   @IsString()
   options?: string;
 }
+
+export class CreateColumnConfigDto {
+  @ApiProperty({ description: '配置名称' })
+  @IsString()
+  name: string;
+  @ApiProperty({ description: '配置描述' })
+  @IsOptional()
+  @IsString()
+  description?: string;
+}
