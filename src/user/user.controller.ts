@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  ValidationPipe,
-  UsePipes,
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -19,9 +17,8 @@ import { Group } from './entities/group.entity';
 
 @Controller('user')
 @ApiTags('User')
-@UsePipes(new ValidationPipe())
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {

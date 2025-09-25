@@ -4,6 +4,7 @@ import { FieldType } from '../entities/field-type.entity';
 import { TableQueryParams, TableResponse } from 'src/common/dots/table.dot';
 import { Field } from '../entities/field.entity';
 
+
 export class QueryFieldDto extends TableQueryParams {
   @IsOptional()
   @ApiProperty({ description: '名称' })
@@ -20,6 +21,7 @@ export class QueryFieldTypeDto {
   @ApiProperty({ description: '页码' })
   @IsNumber()
   @IsOptional()
+
   page?: number = 1;
 
   @IsNumber()
