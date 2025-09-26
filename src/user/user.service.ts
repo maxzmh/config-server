@@ -12,15 +12,16 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
-  ) {}
+  ) { }
+
   async create(createUserDto: CreateUserDto) {
-    const users = await this.findOne(createUserDto.email);
-    console.log();
+    const users = await this.findOne(createUserDto.userName);
+
     if (!users?.length) {
       const userTmp = await this.userRepository.create(createUserDto);
       return this.userRepository.save(userTmp);
     }
-    throw new HttpException('用户邮箱已存在', HttpStatus.CONFLICT);
+    throw new HttpException('用户已存在', HttpStatus.CONFLICT);
   }
 
   findAll() {
@@ -39,8 +40,8 @@ export class UserService {
     }
   }
 
-  async findOne(email: string) {
-    const user = await this.userRepository.findBy({ email });
+  async findOne(userName: string) {
+    const user = await this.userRepository.findBy({ userName });
     return user;
   }
 

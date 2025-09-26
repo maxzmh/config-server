@@ -14,9 +14,11 @@ import { FieldType } from './field/entities/field-type.entity';
 import { Field } from './field/entities/field.entity';
 import { FieldConfig } from './field/entities/field-config.entity';
 import { DefaultNamingStrategy } from 'typeorm';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalFilter } from './common/filters/global.filter';
 import { GlobalInterceptor } from './common/interceptors/global/global.interceptor';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { GlobalInterceptor } from './common/interceptors/global/global.intercept
         } as TypeOrmModuleOptions;
       },
     }),
+    AuthModule,
     FieldModule,
     UserModule,
   ],
@@ -65,6 +68,10 @@ import { GlobalInterceptor } from './common/interceptors/global/global.intercept
       provide: APP_INTERCEPTOR,
       useClass: GlobalInterceptor,
     },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
-export class AppModule {}
+export class AppModule { }
